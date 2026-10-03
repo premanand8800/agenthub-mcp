@@ -3,9 +3,9 @@
 [![CI](https://github.com/premanand8800/agenthub-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/premanand8800/agenthub-mcp/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%2B-blue)
 ![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](https://github.com/premanand8800/agenthub-mcp/blob/main/LICENSE)
 
-[![AgentHub demo: Codex fixes a bug in an isolated worktree, Claude reviews the patch, it is applied and tests pass](docs/demo.gif)](https://github.com/premanand8800/agenthub-mcp/releases/download/v1.2.0/agenthub-demo.mp4)
+[![AgentHub demo: Codex fixes a bug in an isolated worktree, Claude reviews the patch, it is applied and tests pass](https://raw.githubusercontent.com/premanand8800/agenthub-mcp/main/docs/demo.gif)](https://github.com/premanand8800/agenthub-mcp/releases/download/v1.2.0/agenthub-demo.mp4)
 
 ▶ **[Watch the demo in full quality (MP4, 50 s)](https://github.com/premanand8800/agenthub-mcp/releases/download/v1.2.0/agenthub-demo.mp4)**: a real run, not a mock-up.
 
@@ -29,8 +29,7 @@ Pure Python standard library. No dependencies. Linux and macOS. About 20 MB of R
 ## Quick start
 
 ```bash
-pipx install git+https://github.com/premanand8800/agenthub-mcp
-# or: uv tool install git+https://github.com/premanand8800/agenthub-mcp
+pipx install agenthub-gateway       # or: uv tool install agenthub-gateway
 agenthub config --init               # writes ~/.agenthub/config.json
 $EDITOR ~/.agenthub/config.json      # set "trusted_workspaces": ["~/code"]
 agenthub doctor
@@ -192,7 +191,7 @@ Cloud credentials such as `AWS_*` and `GH_TOKEN` are **not** passed unless you l
 
 ## Custom agents
 
-Put a JSON file in `~/.agenthub/agents/` (mode `600`). See [`examples/custom-agent.json`](examples/custom-agent.json).
+Put a JSON file in `~/.agenthub/agents/` (mode `600`). See [`examples/custom-agent.json`](https://github.com/premanand8800/agenthub-mcp/blob/main/examples/custom-agent.json).
 
 ```json
 {
@@ -238,7 +237,7 @@ Errors are always `{"ok": false, "error": {"code", "message"}}`. A `quota_exhaus
 
 ## Security model
 
-See [SECURITY.md](SECURITY.md). In short:
+See [SECURITY.md](https://github.com/premanand8800/agenthub-mcp/blob/main/SECURITY.md). In short:
 
 - **The model is untrusted.** Defaults assume a prompt injection will reach AgentHub. Every agent run is sandboxed, limited to trusted folders, given a minimal environment, time-limited and audited. A model can't enable `full` mode or approve its own tools.
 - **No shell, ever.** Prompts can't become CLI options.
@@ -260,7 +259,7 @@ Tests use a fake agent: no API keys, no quota. To add a built-in adapter, subcla
 
 ## Contributing
 
-Issues and PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). Security reports: [SECURITY.md](SECURITY.md).
+Issues and PRs welcome — see [CONTRIBUTING.md](https://github.com/premanand8800/agenthub-mcp/blob/main/CONTRIBUTING.md). Security reports: [SECURITY.md](https://github.com/premanand8800/agenthub-mcp/blob/main/SECURITY.md).
 
 ## License
 

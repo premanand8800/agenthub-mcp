@@ -61,4 +61,4 @@ First public release. A rewrite of the 0.x prototype.
 - Protocol versions 2024-11-05 through 2025-06-18; server `instructions` for the model.
 - New commands: `ask`, `run`, `tasks`, `task`, `logs`, `cancel`, `config`, `approve`, `doctor`.
 - Model lists come from the agents themselves instead of hard-coded, outdated lists.
-- Installable package (`pipx install agenthub-mcp`), stdlib only, CI on Linux and macOS.
+- Installable package (`pipx install agenthub-gateway`), stdlib only, CI on Linux and macOS.
