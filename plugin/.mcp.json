@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "agenthub": {
-      "command": "agenthub",
-      "args": ["mcp"]
+      "command": "uvx",
+      "args": ["agenthub-gateway", "mcp"]
     }
   }
 }

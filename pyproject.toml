@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agenthub-gateway"
-version = "1.2.0"
+version = "1.2.1"
 description = "Secure MCP + HTTP gateway that lets Claude Code delegate work to Codex, Antigravity, Aider, Goose and custom coding agents."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -31,6 +31,8 @@ Changelog = "https://github.com/premanand8800/agenthub-mcp/blob/main/CHANGELOG.m
 
 [project.scripts]
 agenthub = "agenthub.cli:main"
+# Same CLI under the package name, so `uvx agenthub-gateway mcp` works with no install step.
+agenthub-gateway = "agenthub.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

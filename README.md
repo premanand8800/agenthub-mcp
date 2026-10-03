@@ -30,6 +30,7 @@ Pure Python standard library. No dependencies. Linux and macOS. About 20 MB of R
 
 ```bash
 pipx install agenthub-gateway       # or: uv tool install agenthub-gateway
+                                     # or run without installing: uvx agenthub-gateway doctor
 agenthub config --init               # writes ~/.agenthub/config.json
 $EDITOR ~/.agenthub/config.json      # set "trusted_workspaces": ["~/code"]
 agenthub doctor
@@ -39,6 +40,7 @@ Then connect it to Claude Code in **one** of two ways:
 
 ```bash
 # A) Plugin: MCP server plus slash commands (/second-opinion, /cross-review, /delegate, /agent-tasks)
+#    Starts the server with `uvx agenthub-gateway mcp`, so it needs uv (https://docs.astral.sh/uv/).
 claude plugin marketplace add premanand8800/agenthub-mcp
 claude plugin install agenthub@agenthub
 

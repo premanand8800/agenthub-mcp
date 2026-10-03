@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.1
+
+- The CLI is also installed as `agenthub-gateway`, so `uvx agenthub-gateway mcp` runs AgentHub with no install step.
+  Package-aware tools such as HOL Guard can then identify the server by its PyPI name.
+- The Claude Code plugin starts the server with `uvx agenthub-gateway mcp`.
+
 ## 1.2.0
 
 Published on PyPI as `agenthub-gateway` (the name `agenthub-mcp` was too similar to an existing project). The repository name is unchanged.
