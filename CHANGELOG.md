@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.2
+
+- `agenthub-gateway` with no arguments starts the MCP server when stdin is not a terminal, as when an MCP client
+  runs `uvx agenthub-gateway`. In a terminal it still prints help. `agenthub` is unchanged.
+
 ## 1.2.1
 
 - The CLI is also installed as `agenthub-gateway`, so `uvx agenthub-gateway mcp` runs AgentHub with no install step.

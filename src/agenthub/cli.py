@@ -457,3 +457,16 @@ def main(argv: Optional[List[str]] = None) -> int:
         return 1
     except KeyboardInterrupt:
         return 130
+
+
+def gateway_main(argv: Optional[List[str]] = None) -> int:
+    """Entry point for the `agenthub-gateway` command (the PyPI package name).
+
+    With no arguments and a non-terminal stdin, as when an MCP client runs
+    `uvx agenthub-gateway`, start the MCP server like most MCP packages do.
+    In a terminal, with no arguments it prints help like `agenthub`.
+    """
+    args = sys.argv[1:] if argv is None else argv
+    if not args and not sys.stdin.isatty():
+        args = ["mcp"]
+    return main(args)
