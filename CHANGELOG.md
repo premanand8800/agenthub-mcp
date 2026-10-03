@@ -2,6 +2,8 @@
 
 ## 1.2.0
 
+Published on PyPI as `agenthub-gateway` (the name `agenthub-mcp` was too similar to an existing project). The repository name is unchanged.
+
 ### Added
 - **Worktree isolation:** `start_task(isolation="worktree")` runs the agent in a private git checkout of your current state. New tools `get_task_diff`, `apply_task` (with 3-way fallback) and `discard_task`. Build artifacts are left out of diffs.
 - **`review`:** read-only review of `git diff <base>` or of a worktree task's changes by another model.
