@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "agenthub": {
+      "command": "agenthub",
+      "args": ["mcp"]
+    }
+  }
+}

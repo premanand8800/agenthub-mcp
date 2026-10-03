@@ -1,0 +1,19 @@
+{
+  "name": "myagent",
+  "display_name": "My Agent",
+  "description": "Example: any CLI that takes a prompt can be an AgentHub agent.",
+  "command": "myagent",
+  "args": ["run", "--prompt={prompt}"],
+  "model_args": ["--model", "{model}"],
+  "add_dir_args": ["--add-dir", "{dir}"],
+  "output_schema_args": ["--schema", "{schema_file}"],
+  "json_output": { "reply": "result", "session_id": "session_id", "cost_usd": "cost" },
+  "env_passthrough": ["MYAGENT_API_KEY"],
+  "modes": {
+    "read-only": ["--no-write"],
+    "workspace-write": ["--sandbox"]
+  },
+  "env": {},
+  "install_hint": "Install with: pipx install myagent",
+  "models": [{ "id": "myagent-large", "name": "My Agent Large" }]
+}

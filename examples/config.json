@@ -1,0 +1,8 @@
+{
+  "trusted_workspaces": ["~/code", "~/work"],
+  "default_permission_mode": "workspace-write",
+  "allow_full_access": false,
+  "ask_timeout_seconds": 900,
+  "task_timeout_seconds": 14400,
+  "max_concurrent_tasks": 4
+}

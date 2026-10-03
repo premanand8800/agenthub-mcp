@@ -1,0 +1,14 @@
+{
+  "name": "agenthub",
+  "description": "AgentHub: one secure gateway from Claude Code to other coding agents.",
+  "owner": {
+    "name": "prempathak"
+  },
+  "plugins": [
+    {
+      "name": "agenthub",
+      "source": "./plugin",
+      "description": "Delegate to Codex, Antigravity, Claude and other coding agents with sandboxing, worktrees and audit."
+    }
+  ]
+}

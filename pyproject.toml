@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agenthub-mcp"
+version = "1.2.0"
+description = "Secure MCP + HTTP gateway that lets Claude Code delegate work to Codex, Antigravity, Aider, Goose and custom coding agents."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+keywords = ["mcp", "claude-code", "codex", "coding-agents", "model-context-protocol"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development",
+]
+authors = [{ name = "prempathak" }]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/premanand8800/agenthub-mcp"
+Repository = "https://github.com/premanand8800/agenthub-mcp"
+Issues = "https://github.com/premanand8800/agenthub-mcp/issues"
+Changelog = "https://github.com/premanand8800/agenthub-mcp/blob/main/CHANGELOG.md"
+
+[project.scripts]
+agenthub = "agenthub.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "I", "UP"]
+ignore = ["UP006", "UP007", "UP035", "UP045"]  # keep typing.List/Optional for readability on 3.10

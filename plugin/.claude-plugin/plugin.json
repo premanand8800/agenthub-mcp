@@ -1,0 +1,7 @@
+{
+  "name": "agenthub",
+  "version": "1.2.0",
+  "description": "Second opinions, cross-model reviews and isolated delegation to other coding agents through AgentHub.",
+  "author": { "name": "prempathak" },
+  "keywords": ["codex", "antigravity", "review", "delegation", "multi-agent"]
+}
