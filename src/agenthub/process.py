@@ -98,12 +98,13 @@ def kill_group(pid: int, grace: float = 2.0) -> None:
     for _ in range(int(grace / 0.1)):
         try:
             os.killpg(pid, 0)
-        except ProcessLookupError:
+        except (ProcessLookupError, PermissionError):
+            # macOS answers EPERM (not ESRCH) once every process left in the group is a zombie.
             return
         time.sleep(0.1)
     try:
         os.killpg(pid, signal.SIGKILL)
-    except ProcessLookupError:
+    except (ProcessLookupError, PermissionError):
         pass
 
 
