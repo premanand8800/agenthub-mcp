@@ -5,6 +5,8 @@
 ![Dependencies](https://img.shields.io/badge/dependencies-0-brightgreen)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
+![AgentHub demo: Codex fixes a bug in an isolated worktree, Claude reviews the patch, it is applied and tests pass](docs/demo.gif)
+
 **Let Claude Code hand work to other coding agents (Codex, Antigravity, Claude, Aider, Goose, or any CLI) without handing them your whole machine.**
 
 AgentHub is a small MCP server, CLI and optional HTTP API. Use it to:
