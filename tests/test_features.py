@@ -249,3 +249,71 @@ class CompareTests(HubTestCase):
             self.hub.compare(["fake"], "hi")
         with self.assertRaises(InvalidArgument):
             self.hub.compare(["fake", "fake"], "hi")
+
+
+class TaskStoreRegressionTests(HubTestCase):
+    def _finish_running_task(self):
+        task = self.hub.start_task("fake", "hello", workdir=self.work)
+        for _ in range(100):  # the runner writes .exit; the record still says "running" until refreshed
+            if os.path.exists(self.hub.tasks._p(task["task_id"], "exit")):
+                return task
+            time.sleep(0.05)
+        self.fail("task never wrote its exit file")
+
+    def test_start_does_not_deadlock_on_finished_but_unrefreshed_task(self):
+        import threading
+
+        self._finish_running_task()
+        result = {}
+
+        def go():
+            result["task"] = self.hub.start_task("fake", "again", workdir=self.work)
+
+        t = threading.Thread(target=go, daemon=True)
+        t.start()
+        t.join(10)
+        self.assertFalse(t.is_alive(), "start_task hung: file lock is not re-entrant")
+        self.assertIn("task_id", result["task"])
+
+    def test_lock_wait_times_out_with_clear_error(self):
+        import fcntl
+        from agenthub import tasks as tasks_module
+
+        fd = os.open(os.path.join(self.hub.tasks.dir, ".lock"), os.O_RDWR | os.O_CREAT, 0o600)
+        old = tasks_module.LOCK_TIMEOUT_SECONDS
+        tasks_module.LOCK_TIMEOUT_SECONDS = 0.3
+        try:
+            fcntl.flock(fd, fcntl.LOCK_EX)
+            with self.assertRaisesRegex(Unavailable, "task store busy"):
+                self.hub.tasks.update("nope", x=1)
+        finally:
+            tasks_module.LOCK_TIMEOUT_SECONDS = old
+            os.close(fd)
+
+    def test_failed_start_leaves_no_schema_file(self):
+        from agenthub.errors import LimitExceeded
+
+        self.hub.tasks.max_concurrent = 0
+        with self.assertRaises(LimitExceeded):
+            self.hub.start_task("fake", "hi", workdir=self.work, output_schema={"type": "object"})
+        leftovers = [n for n in os.listdir(self.hub.tasks.dir) if n.endswith(".schema")]
+        self.assertEqual(leftovers, [])
+
+    def test_prune_sweeps_orphan_files_only(self):
+        d = self.hub.tasks.dir
+        orphan, live = os.path.join(d, "fake-old.schema"), os.path.join(d, "fake-new.schema")
+        for p in (orphan, live):
+            open(p, "w").close()
+        os.utime(orphan, (1, 1))
+        self.hub.config.retention_days = 1
+        self.hub.tasks.retention_days = 1
+        self.hub.tasks.prune()
+        self.assertFalse(os.path.exists(orphan))
+        self.assertTrue(os.path.exists(live))
+
+    def test_structured_task_result_is_not_duplicated(self):
+        task = self.hub.start_task("fake", "hi", workdir=self.work, output_schema={"type": "object"})
+        done = self.hub.wait_task(task["task_id"], timeout_seconds=30)
+        self.assertEqual(done["status"], "succeeded", done)
+        self.assertEqual(done.get("structured"), {"answer": 42})
+        self.assertNotIn("final_output", done)

@@ -400,6 +400,12 @@ class Hub:
         except BaseException:
             if iso:
                 worktree.remove(iso)
+            for leftover in (spec.schema_file, spec.output_file):  # the task record never existed
+                if leftover:
+                    try:
+                        os.unlink(leftover)
+                    except OSError:
+                        pass
             raise
         self.audit.record(
             source,
@@ -434,6 +440,9 @@ class Hub:
         task.update(session_id=parsed.session_id, usage=parsed.usage, cost_usd=parsed.cost_usd)
         if task["status"] == "succeeded" and raw.get("wants_structured"):
             task.update(self._structured(task.get("final_output") or "", parsed.structured))
+            if task.get("structured") is not None:
+                # The parsed object already carries the reply: sending the raw text too doubles the tokens.
+                task.pop("final_output", None)
         if task["status"] == "failed":
             quota = detect_quota("\n".join(filter(None, [parsed.error, log[-4000:]])))
             if quota:

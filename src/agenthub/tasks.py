@@ -17,7 +17,7 @@ import uuid
 from typing import Any, Dict, List, Optional
 
 from agenthub import runner as _runner_module
-from agenthub.errors import LimitExceeded, NotFound
+from agenthub.errors import LimitExceeded, NotFound, Unavailable
 from agenthub.process import child_env, kill_group, truncate_tail
 from agenthub.security import atomic_write_json, ensure_private_dir, validate_id
 
@@ -34,6 +34,9 @@ RUNNING, SUCCEEDED, FAILED, TIMED_OUT, CANCELLED, LOST = (
 RUNNER = os.path.abspath(_runner_module.__file__)
 
 TERMINAL = {SUCCEEDED, FAILED, TIMED_OUT, CANCELLED, LOST}
+
+# Longest wait for the task-store lock before failing with a clear error instead of hanging.
+LOCK_TIMEOUT_SECONDS = 30.0
 
 
 def _proc_start_ticks(pid: int) -> Optional[int]:
@@ -77,6 +80,7 @@ class TaskStore:
         self.timeout_seconds = timeout_seconds
         self.retention_days = retention_days
         self._lock = threading.Lock()
+        self._held = threading.local()
         self._children: Dict[str, subprocess.Popen] = {}
         ensure_private_dir(self.dir)
 
@@ -145,14 +149,38 @@ class TaskStore:
             return self._public(meta)
 
     def _file_lock(self):
+        """Cross-process lock on <dir>/.lock. Re-entrant per thread: start() holds it while list()
+        refreshes tasks, and a second flock() on a new file descriptor would wait on itself forever."""
         import contextlib
 
         @contextlib.contextmanager
         def held():
+            if getattr(self._held, "depth", 0):
+                self._held.depth += 1
+                try:
+                    yield
+                finally:
+                    self._held.depth -= 1
+                return
             fd = os.open(os.path.join(self.dir, ".lock"), os.O_RDWR | os.O_CREAT, 0o600)
             try:
-                fcntl.flock(fd, fcntl.LOCK_EX)
-                yield
+                deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+                while True:
+                    try:
+                        fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                        break
+                    except BlockingIOError:
+                        if time.monotonic() >= deadline:
+                            raise Unavailable(
+                                f"task store busy: could not lock {self.dir} within {LOCK_TIMEOUT_SECONDS:g}s. "
+                                "Another AgentHub process may be stuck."
+                            ) from None
+                        time.sleep(0.02)
+                self._held.depth = 1
+                try:
+                    yield
+                finally:
+                    self._held.depth = 0
             finally:
                 os.close(fd)  # closing releases the lock
 
@@ -312,4 +340,22 @@ class TaskStore:
                     except FileNotFoundError:
                         pass
                 removed += 1
+        removed += self._sweep_orphans(cutoff)
         return removed
+
+    def _sweep_orphans(self, cutoff: float) -> int:
+        """Delete .schema/.out/.exit files whose task record never got written (a failed start)."""
+        swept = 0
+        for name in os.listdir(self.dir):
+            task_id, _, ext = name.rpartition(".")
+            if ext not in ("schema", "out", "exit") or not task_id:
+                continue
+            path = os.path.join(self.dir, name)
+            try:
+                if os.path.exists(self._p(task_id, "json")) or os.path.getmtime(path) >= cutoff:
+                    continue
+                os.unlink(path)
+                swept += 1
+            except OSError:
+                continue
+        return swept

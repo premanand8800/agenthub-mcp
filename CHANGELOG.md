@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.2.3
+
+- Fixed: `start_task` could hang forever. It held the task-store lock and then refreshed finished tasks, which took
+  the same lock again on a second file descriptor and waited on itself. The lock is now re-entrant per thread.
+- The task-store lock wait now times out after 30 seconds with a "task store busy" error instead of hanging.
+- Fixed: a failed `start_task` left its `.schema` (and `.out`) file behind. Failed starts clean up after themselves,
+  and `prune` removes old orphan files.
+- `get_task` and `wait_task` no longer return `final_output` when the reply parsed into `structured`, which
+  doubled the tokens for large results. `final_output` is still returned when parsing fails.
+- Documented that Codex cannot combine `add_dirs` with `session_id`.
+
 ## 1.2.2
 
 - `agenthub-gateway` with no arguments starts the MCP server when stdin is not a terminal, as when an MCP client
