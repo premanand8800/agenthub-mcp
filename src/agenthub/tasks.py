@@ -36,7 +36,7 @@ RUNNER = os.path.abspath(_runner_module.__file__)
 TERMINAL = {SUCCEEDED, FAILED, TIMED_OUT, CANCELLED, LOST}
 
 # Longest wait for the task-store lock before failing with a clear error instead of hanging.
-LOCK_TIMEOUT_SECONDS = 30.0
+LOCK_TIMEOUT_SECONDS = 10.0
 
 
 def _proc_start_ticks(pid: int) -> Optional[int]:

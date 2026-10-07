@@ -3,6 +3,7 @@
 import json
 import os
 import subprocess
+import sys
 import threading
 import time
 
@@ -318,3 +319,65 @@ class TaskStoreRegressionTests(HubTestCase):
         self.assertEqual(done["status"], "succeeded", done)
         self.assertEqual(done.get("structured"), {"answer": 42})
         self.assertNotIn("final_output", done)
+
+
+class StartupTests(HubTestCase):
+    def test_run_answers_handshake_while_task_lock_is_held(self):
+        import fcntl
+        import json as _json
+
+        fd = os.open(os.path.join(self.hub.tasks.dir, ".lock"), os.O_RDWR | os.O_CREAT, 0o600)
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        try:
+            # A finished task still marked "running": refreshing it at startup needs the lock.
+            tid = "fake-20260101-000000-deadbeef"
+            meta = {
+                "task_id": tid,
+                "agent": "fake",
+                "status": "running",
+                "pid": 99999999,
+                "pid_start_ticks": None,
+                "workdir": self.work,
+                "permission_mode": "read-only",
+                "model": None,
+                "prompt": {},
+                "output_file": None,
+                "created_at": time.time(),
+                "finished_at": None,
+            }
+            with open(os.path.join(self.hub.tasks.dir, tid + ".json"), "w") as f:
+                _json.dump(meta, f)
+            with open(os.path.join(self.hub.tasks.dir, tid + ".exit"), "w") as f:
+                _json.dump({"exit_code": 0, "finished_at": time.time()}, f)
+            env = dict(os.environ, PYTHONPATH=os.path.join(os.path.dirname(__file__), "..", "src"))
+            env["AGENTHUB_HOME"] = os.path.dirname(self.hub.tasks.dir)
+            proc = subprocess.Popen(
+                [sys.executable, "-m", "agenthub", "mcp"],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+                env=env,
+            )
+            try:
+                init = {
+                    "jsonrpc": "2.0",
+                    "id": 1,
+                    "method": "initialize",
+                    "params": {
+                        "protocolVersion": "2025-06-18",
+                        "capabilities": {},
+                        "clientInfo": {"name": "t", "version": "0"},
+                    },
+                }
+                proc.stdin.write(_json.dumps(init) + "\n")
+                proc.stdin.flush()
+                timer = threading.Timer(5, proc.kill)
+                timer.start()
+                line = proc.stdout.readline()
+                timer.cancel()
+                self.assertIn('"result"', line)
+            finally:
+                proc.kill()
+        finally:
+            os.close(fd)

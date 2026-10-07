@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "agenthub-gateway"
-version = "1.2.3"
+version = "1.2.4"
 description = "Secure MCP + HTTP gateway that lets Claude Code delegate work to Codex, Antigravity, Aider, Goose and custom coding agents."
 readme = "README.md"
 requires-python = ">=3.10"

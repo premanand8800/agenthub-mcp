@@ -468,9 +468,19 @@ class MCPServer:
 
 def run(hub: Optional[Hub] = None) -> None:
     hub = hub or Hub()
-    removed = hub.prune()
-    if removed:
-        print(f"agenthub: pruned {removed} old task(s)", file=sys.stderr)
+
+    def prune_in_background() -> None:
+        # Never block the handshake: a stuck peer holding the task lock would otherwise make every
+        # reconnect hit the client's connect timeout.
+        try:
+            removed = hub.prune()
+        except Exception as e:
+            print(f"agenthub: startup prune skipped: {e}", file=sys.stderr)
+            return
+        if removed:
+            print(f"agenthub: pruned {removed} old task(s)", file=sys.stderr)
+
+    threading.Thread(target=prune_in_background, name="agenthub-prune", daemon=True).start()
 
     def on_signal(signum, _frame):
         raise SystemExit(128 + signum)  # unwinds serve() so close() kills in-flight runs

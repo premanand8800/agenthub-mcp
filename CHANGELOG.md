@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.4
+
+- Fixed: the server pruned old tasks before answering the MCP handshake. If another AgentHub process held the task
+  lock, every reconnect timed out. Pruning now runs in the background.
+- The task-store lock wait is now 10 seconds, shorter than the 30 second connect timeout of MCP clients, so a stuck
+  lock shows as "task store busy".
+
 ## 1.2.3
 
 - Fixed: `start_task` could hang forever. It held the task-store lock and then refreshed finished tasks, which took
