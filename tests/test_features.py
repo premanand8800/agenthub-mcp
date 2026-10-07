@@ -277,6 +277,7 @@ class TaskStoreRegressionTests(HubTestCase):
 
     def test_lock_wait_times_out_with_clear_error(self):
         import fcntl
+
         from agenthub import tasks as tasks_module
 
         fd = os.open(os.path.join(self.hub.tasks.dir, ".lock"), os.O_RDWR | os.O_CREAT, 0o600)

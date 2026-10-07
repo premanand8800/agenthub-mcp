@@ -39,7 +39,11 @@ _STR = {"type": "string"}
 _AGENT = {"type": "string", "description": "Agent name from list_agents, e.g. 'codex' or 'claude'."}
 _STR_LIST = {"type": "array", "items": {"type": "string"}}
 _TASK = {"type": "string", "description": "task_id from start_task"}
-_SCHEMA = {"type": "object", "description": "Optional JSON Schema; the reply is returned parsed as `structured` (and, for tasks, `final_output` is omitted when parsing succeeds)."}
+_SCHEMA = {
+    "type": "object",
+    "description": "Optional JSON Schema; the reply is returned parsed as `structured`. "
+    "For tasks, `final_output` is then omitted.",
+}
 _FALLBACK = {**_STR_LIST, "description": "Agents to try in order if this one is out of quota or unavailable."}
 _RUN_PROPS = {
     "agent": _AGENT,
@@ -47,8 +51,14 @@ _RUN_PROPS = {
     "workdir": {"type": "string", "description": "Absolute project directory. Default: first trusted workspace."},
     "permission_mode": {"type": "string", "enum": list(PERMISSION_MODES)},
     "model": {"type": "string", "description": "Model ID from list_models."},
-    "session_id": {"type": "string", "description": "Continue this session (returned by earlier calls). Codex cannot combine this with add_dirs."},
-    "add_dirs": {**_STR_LIST, "description": "Extra absolute directories the agent may use. Not supported when resuming a Codex session (session_id)."},
+    "session_id": {
+        "type": "string",
+        "description": "Continue this session (returned by earlier calls). Codex cannot combine this with add_dirs.",
+    },
+    "add_dirs": {
+        **_STR_LIST,
+        "description": "Extra absolute directories the agent may use. Not supported with session_id on Codex.",
+    },
     "images": {**_STR_LIST, "description": "Absolute image paths to attach (agents with supports.images)."},
     "output_schema": _SCHEMA,
     "fallback_agents": _FALLBACK,
