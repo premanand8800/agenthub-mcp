@@ -7,7 +7,7 @@
 
 [![AgentHub demo: Codex fixes a bug in an isolated worktree, Claude reviews the patch, it is applied and tests pass](https://raw.githubusercontent.com/premanand8800/agenthub-mcp/main/docs/demo.gif)](https://github.com/premanand8800/agenthub-mcp/releases/download/v1.2.4/agenthub-demo-vo.mp4)
 
-▶ **[Watch the demo in full quality (MP4, 37 s, with voiceover)](https://github.com/premanand8800/agenthub-mcp/releases/download/v1.2.4/agenthub-demo-vo.mp4)**: a real run, not a mock-up.
+▶ **[Watch the demo in full quality (MP4, 43 s, with voiceover)](https://github.com/premanand8800/agenthub-mcp/releases/download/v1.2.4/agenthub-demo-vo.mp4)**: a real run, not a mock-up.
 
 **Let Claude Code hand work to other coding agents (Codex, Antigravity, Claude, Aider, Goose, or any CLI) without handing them your whole machine.**
 
